@@ -1,140 +1,64 @@
-const functions = require('firebase-functions');
-const querystring = require('querystring');
-const {WebhookClient} = require('dialogflow-fulfillment');
-const https = require('http');
+//Hey. Can you tell me how much energy gets generated from an atom?
+//questa è la versione 1
+//curl -H "Content-Type: application/json; charset=utf-8"  -H "Authorization: Bearer ya29.c.EloiBgoNHxVno0PlVavs7hICAUPFk34D8qjZk0NQhoKEGtPhBg4_HojCmKiVei0esZysSVkQ8of7aIyV7jS9IHBIcgTpmoqw6bEt4WUa7nu7QkDnJ140ms_-dFc"  -d "{\"queryInput\":{\"text\":{\"text\":\"3 kg\",\"languageCode\":\"en\"}},\"queryParams\":{\"timeZone\":\"Europe/Rome\"}}" "https://dialogflow.googleapis.com/v2/projects/einstein-f1c44/agent/sessions/59d5513d-2a88-5edd-b26e-0020bdc10c26:detectIntent"
+// EinsteinBot webhooks
+// Author : VERSIONE MIA
+//WEBHOOK ORIGINALE https://einstein-bot.herokuapp.com/emc2
+const express = require('express');
+const bodyParser = require('body-parser');
+const request = require('request');
 
-let avaSession='';
-let cont=0;
-let strSessions=new Array();
+const app = express();
+console.log("sto per partire...");
+app.set('port', (process.env.PORT || 5000));
+
+// Process application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended: false}));
+
+// Process application/json
+app.use(bodyParser.json());
+
+app.use(express.static('public'));
+
+// Spin up the server
+app.listen(app.get('port'), function() {
+    console.log('running on port', app.get('port'))
+})
+
+// Index route
+app.get('/', function (req, res) {
+    res.send('Hello world, I am EinsteinBot webhook.')
+})
 
 
-postData = querystring.stringify({
-    'searchText': 'ciao',
-    'user':'',
-    'pwd':'',
-    'ava':'FarmaInfoBot'
-    
-  });
-   const options = {
-    hostname: '86.107.98.69',
-    port: 8080, 
-    path: '/AVA/rest/searchService/search_2?searchText=', 
-    method: 'POST', 
-    headers: {
-      'Content-Type': 'application/json', 
-     // 'Content-Length': Buffer.byteLength(postData),
-      'Cookie':'JSESSIONID=' +avaSession
+app.post('/emc2/', function (req, res) {
+    console.log(JSON.stringify(req.body));
+    //var weight = req.body.result.parameters.weight;
+    var weight = req.body.queryResult.parameters['weight'];
+    var m = weight.amount;
+    var weight_unit = weight.unit;
+    //convert weight into kg
+    if (weight_unit == 'g'){
+        m = m/1000.0;
     }
-  };
-
- exports.dialogflowFirebaseFulfillment = functions.https.onRequest((req, res) => {
+    var c2 = 9 * 10^16; //in m^2/s^2
+    var e = m * c2;
+    
+    res.setHeader('Content-Type', 'application/json');
+    
+    var botSpeech = "OUTPUT: Energy that the system can create is " + e 
+    + " Joules.";
+    /*
+    out = {speech: botSpeech,
+            displayText: botSpeech,
+            data: null};
+    */
+   out = {fulfillmentText: botSpeech,
    
-   const agent = new WebhookClient({ request: req, response: res});
- 
-   //console.log('Dialogflow Request headers: ' + JSON.stringify(req.headers));
-   //console.log('DIALOGFLOW Request body: ' + JSON.stringify(req.body));
-
-    console.log('*************inizio da INLINE EDITOR  **********');
-     
-    let strRicerca='';
-    if (req.body.queryResult.parameters['searchText']) {
-      strRicerca=querystring.escape(req.body.queryResult.parameters['searchText']); //querystring.escape(
-        console.log('valore della chiave di ricerca '+ strRicerca);
-  
-      
-        options.path+=strRicerca+'&user=&pwd=&ava=FarmaInfoBot';
-      
-        console.log('---->percorso  ' + options.path);
-    }
+        payload: null};
+    var outString = JSON.stringify(out);
+    console.log('MIO OUTPUT :' + outString);
     
-   callAVA(agent, strRicerca).then((strOutput)=> {
-       
-        return res.json({ 'fulfillmentText': strOutput }); 
-       
-    }).catch((error) => {
-        //console.log('Si è verificato errore : ' +error);
-       return res.json({ 'fulfillmentText': 'non lo so!!!!!!!!!!'});
-     
-    });
- 
+    res.send(outString);
+})
 
-  
-function callAVA(agent, strRicerca) {
-  return new Promise((resolve, reject) => {
-  
-    let data = '';
-    const req = https.request(options, (res) => {
-    console.log('________valore di options.path INIZIO ' + options.path);
-    console.log(`STATUS DELLA RISPOSTA: ${res.statusCode}`);
-    console.log(`HEADERS DELLA RISPOSTA: ${JSON.stringify(res.headers)}`);
-     console.log('..............BEFORE valore di avaSession ' + avaSession );
-    
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => {
-     console.log(`BODY: ${chunk}`);
-     data += chunk;
-    //sposto qua
-     let c=JSON.parse(data);
-            let strOutput=c.output[0].output; // c.output[0].output;
-            strOutput=strOutput.replace(/(<\/p>|<p>|<b>|<\/b>|<br>|<\/br>|<strong>|<\/strong>|<div>|<\/div>|<ul>|<li>|<\/ul>|<\/li>|&nbsp;|)/gi, '');
-            
-            //inserito questo
-           // let idSessione=c.sessionID;
-           // strSessions.push(idSessione);
-    
-            //console.log('cookie inserito in array ' + strSessions[cont] );
-            //avaSession=strSessions[cont];
-             //console.log('..............AFTER valore di avaSession ' + avaSession );
-            //cont++;
-            //CONTROLLO SE AVASESSION E' VUOTA, SE NO CONCATENA SEMPRE le sessioni
-             if (avaSession ==='' ){
-                 console.log('se avaSession è vuota ...');
-                //avaSession=strSessions[cont];
-                avaSession=c.sessionID;
-                
-                //cont++;
-                //options.headers.Cookie+=avaSession;
-                 options.headers.Cookie+=avaSession;
-                 console.log('VALORE DEL COOKIE ' + options.headers.Cookie);
-                console.log('------------->VALORE DEL COOKIE<------' +options.headers.Cookie);
-            }else {
-                
-                 console.log('NN HO INSERITO IL COOKIE'); 
-                
-            }
-           
-            
-            /* fino a qui */
-            console.log(strOutput);
-        
-            console.log("stato della risposta "  + res.statusCode);
-            console.log('ora sono in end ');
-            resolve(strOutput);  
-    });
-    res.on('end', () => {
-      console.log('No more data in response.');
-      
-           
-            options.path='/AVA/rest/searchService/search_2?searchText=';
-            console.log('valore di options.path FINE ' +  options.path);
-
-    });
-  });
-  
-  req.on('error', (e) => {
-    console.error(`problem with request: ${e.message}`);
-  });
-  
-  // write data to request body
-  
-  req.write(postData);
-  req.end();
-    
- });
-} 
-
-
-//let intentMap = new Map();
-//intentMap.set('test_fb', callAVA);
-//agent.handleRequest(intentMap);
-});

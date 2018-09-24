@@ -1,23 +1,17 @@
 {
-  "name": "dialogflowFirebaseFulfillment",
-  "description": "This is the default fulfillment for a Dialogflow agents using Cloud Functions for Firebase",
-  "version": "0.0.1",
-  "private": true,
-  "license": "Apache Version 2.0",
-  "author": "Google Inc.",
-  "engines": {
-    "node": "~6.0"
-  },
+  "name": "boteinstein",
+  "version": "1.0.0",
+  "description": "esempio bot heroku",
+  "main": "index.js",
   "scripts": {
-    "start": "firebase serve --only functions:dialogflowFirebaseFulfillment",
-    "deploy": "firebase deploy --only functions:dialogflowFirebaseFulfillment"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index_ava.js"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "actions-on-google": "^2.2.0",
-    "firebase-admin": "^4.2.1",
-    "firebase-functions": "^0.5.7",
-    "dialogflow": "^0.1.0",
-    "dialogflow-fulfillment": "^0.5.0"
-  
+    "body-parser": "^1.18.3",
+    "express": "^4.16.0",
+    "request": "^2.88.0"
   }
 }
