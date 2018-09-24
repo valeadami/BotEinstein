@@ -1,6 +1,6 @@
 //Hey. Can you tell me how much energy gets generated from an atom?
 //questa è la versione 1
-
+//curl -H "Content-Type: application/json; charset=utf-8"  -H "Authorization: Bearer ya29.c.EloiBgoNHxVno0PlVavs7hICAUPFk34D8qjZk0NQhoKEGtPhBg4_HojCmKiVei0esZysSVkQ8of7aIyV7jS9IHBIcgTpmoqw6bEt4WUa7nu7QkDnJ140ms_-dFc"  -d "{\"queryInput\":{\"text\":{\"text\":\"3 kg\",\"languageCode\":\"en\"}},\"queryParams\":{\"timeZone\":\"Europe/Rome\"}}" "https://dialogflow.googleapis.com/v2/projects/einstein-f1c44/agent/sessions/59d5513d-2a88-5edd-b26e-0020bdc10c26:detectIntent"
 // EinsteinBot webhooks
 // Author : VERSIONE MIA
 //WEBHOOK ORIGINALE https://einstein-bot.herokuapp.com/emc2
