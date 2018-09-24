@@ -1,23 +1,24 @@
-
+//Hey. Can you tell me how much energy gets generated from an atom?
+//questa è la versione 1
 
 // EinsteinBot webhooks
 // Author : VERSIONE MIA
 //WEBHOOK ORIGINALE https://einstein-bot.herokuapp.com/emc2
-const express = require('express')
-const bodyParser = require('body-parser')
-const request = require('request')
+const express = require('express');
+const bodyParser = require('body-parser');
+const request = require('request');
 
-const app = express()
+const app = express();
 console.log("sto per partire...");
-app.set('port', (process.env.PORT || 5000))
+app.set('port', (process.env.PORT || 5000));
 
 // Process application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({extended: false}));
 
 // Process application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 // Spin up the server
 app.listen(app.get('port'), function() {
@@ -32,7 +33,8 @@ app.get('/', function (req, res) {
 
 app.post('/emc2/', function (req, res) {
     console.log(JSON.stringify(req.body));
-    var weight = req.body.result.parameters.weight;
+    //var weight = req.body.result.parameters.weight;
+    var weight = req.body.queryResult.parameters['weight'];
     var m = weight.amount;
     var weight_unit = weight.unit;
     //convert weight into kg
@@ -44,13 +46,16 @@ app.post('/emc2/', function (req, res) {
     
     res.setHeader('Content-Type', 'application/json');
     
-    var botSpeech = "OUTUT: Energy that the system can create is " + e 
+    var botSpeech = "OUTPUT: Energy that the system can create is " + e 
     + " Joules.";
-    
+    /*
     out = {speech: botSpeech,
             displayText: botSpeech,
             data: null};
-    
+    */
+   out = {fulfillmentText: botSpeech,
+   
+        payload: null};
     var outString = JSON.stringify(out);
     console.log('MIO OUTPUT :' + outString);
     
