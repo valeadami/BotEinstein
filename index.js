@@ -1,4 +1,4 @@
-//const functions = require('firebase-functions');
+const functions = require('firebase-functions');
 const querystring = require('querystring');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const https = require('http');
